@@ -8,7 +8,7 @@ The FV-1 is a specialized DSP chip commonly used in guitar pedals and eurorack m
 
 ### Usage
 
-**Binary (.hex)** - `build/` directory
+**Binary (.hex)** - `build/` directory _(coming soon...)_
 The eight programs compiled into a single hex file bank, ready to program directly to an EEPROM.
 
 **Assembly (.asm)** - `asm/` directory

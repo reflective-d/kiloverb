@@ -12,7 +12,7 @@ Every reverb designer has a particular goal for each algorithm: it should sound 
 
 ### FDNs
 
-The basic unit that this topology uses is a 4 channel FDN with a [Hadamard mixing matrix](https://ccrma.stanford.edu/~jos/pasp/Hadamard_Matrix.html). This is a textbook FDN structure. The Hadamard matrix is special because it's orthogonal (preserves energy, preventing buildup or decay) and computationally efficient (uses only additions and subtractions, no multiplications). By itself, this 4 channel FDN produces a stable but chattery and metallic reverb. It is barely usable for anything.
+The basic unit that this topology uses is a 4 channel FDN with a [Hadamard mixing matrix](https://ccrma.stanford.edu/~jos/pasp/Hadamard_Matrix.html). This is a textbook FDN structure. The Hadamard matrix is special because it's orthogonal (preserves energy, preventing buildup or decay) and computationally efficient. By itself, this 4 channel FDN produces a stable but chattery and metallic reverb. It is barely usable for anything.
 
 The next stop for most designs is to make a bigger FDN. The first FV-1 reverbs that I wrote were 8 channels wide. They sounded better than 4 but still only OK. The core constraint is that the matrix computation increases in complexity quadratically with the number of channels. A four channel matrix requires 4² = 16 multiply and accumulate instructions (MACs). An eight channel matrix requires 8² = 64 instructions—that's already half our instruction budget! There are some algebraic tricks with the Hadamard matrix to bend that curve from quadratic to logarithmic, but we still have the constraint that the FV-1 has only 128 instructions per sample and we just can't fit a very large, fully connected matrix.
 
