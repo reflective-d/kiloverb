@@ -1,0 +1,217 @@
+; Program 2
+; Algorithm: plate, Density: dense, Pre-delay: short 
+
+  MEM d00 430
+  MEM d01 1505
+  MEM d02 2150
+  MEM d03 3225
+  MEM d10 645
+  MEM d11 1290
+  MEM d12 2365
+  MEM d13 3010
+  MEM d20 860
+  MEM d21 1935
+  MEM d22 2580
+  MEM d23 3655
+  MEM d30 1075
+  MEM d31 1720
+  MEM d32 2795
+  MEM d33 3440
+
+
+; Registers
+
+  EQU input reg1; Signal input
+  EQU rt reg2 ; Loss factor that sets reverb time
+
+  EQU lpf_d0x reg3 ; Lattice lowpass filters
+  EQU lpf_d1x reg4
+  EQU lpf_d2x reg5
+  EQU lpf_d3x reg6
+
+  EQU out_d0x reg7 ; Lattice outputs
+  EQU out_d1x reg8
+  EQU out_d2x reg9
+  EQU out_d3x reg10
+
+  EQU out ; Output signal
+  EQU lim ; Output limiter/shaper
+
+; Constants
+; Filter coefficients are for 32kHz
+
+  EQU k_1kHz  0.17775899601706946
+  EQU k_2kHz  0.3214160220919626
+  EQU k_4kHz  0.5266022816341156
+  EQU k_8kHz  0.7320508075688772
+
+; Pot0 controls the reverb time.
+; Square root the pot to bias it upwards into a more useful range.
+
+rt_pot:
+  RDAX pot0, 0.99
+  LOG 0.5, 0
+  EXP 1.0, 0
+  WRAX rt, 0.0
+
+; Sum the left and right inputs.
+; Leave some headroom for processing.
+
+adc_input:
+  RDAX adcl, 0.25
+  RDAX adcr, 0.25
+  WRAX input, 0.0
+
+
+calc_lattice_dense_d0x:
+
+  RDA d00# - 33, 0.5
+  RDA d01# - 33, 0.5
+  RDA d02# - 33, 0.5
+  RDA d03# - 33, 0.5
+  WRAX out_d0x, 1.0
+  MULX rt
+  RDAX input, 1.0
+  WRA d10, 0.0
+
+  RDA d00# - 169, 0.5
+  RDA d01# - 169, -0.5
+  RDA d02# - 169, 0.5
+  RDA d03# - 169, -0.5
+  MULX rt
+  WRA d11, 0.0
+
+  RDA d00# - 163, 0.5
+  RDA d01# - 163, 0.5
+  RDA d02# - 163, -0.5
+  RDA d03# - 163, -0.5
+  MULX rt
+  WRA d12, 0.0
+
+  RDA d00# - 87, 0.5
+  RDA d01# - 87, -0.5
+  RDA d02# - 87, -0.5
+  RDA d03# - 87, 0.5
+  MULX rt
+  WRA d13, 0.0
+
+calc_lattice_dense_d1x:
+
+  RDA d10# - 205, 0.5
+  RDA d11# - 205, 0.5
+  RDA d12# - 205, 0.5
+  RDA d13# - 205, 0.5
+  WRAX out_d1x, 1.0
+  MULX rt
+  RDAX input, 1.0
+  WRA d20, 0.0
+
+  RDA d10# - 111, 0.5
+  RDA d11# - 111, -0.5
+  RDA d12# - 111, 0.5
+  RDA d13# - 111, -0.5
+  MULX rt
+  WRA d21, 0.0
+
+  RDA d10# - 15, 0.5
+  RDA d11# - 15, 0.5
+  RDA d12# - 15, -0.5
+  RDA d13# - 15, -0.5
+  MULX rt
+  WRA d22, 0.0
+
+  RDA d10# - 63, 0.5
+  RDA d11# - 63, -0.5
+  RDA d12# - 63, -0.5
+  RDA d13# - 63, 0.5
+  MULX rt
+  WRA d23, 0.0
+
+calc_lattice_dense_d2x:
+
+  RDA d20# - 7, 0.5
+  RDA d21# - 7, 0.5
+  RDA d22# - 7, 0.5
+  RDA d23# - 7, 0.5
+  WRAX out_d2x, 1.0
+  MULX rt
+  RDAX input, 1.0
+  WRA d30, 0.0
+
+  RDA d20# - 192, 0.5
+  RDA d21# - 192, -0.5
+  RDA d22# - 192, 0.5
+  RDA d23# - 192, -0.5
+  MULX rt
+  WRA d31, 0.0
+
+  RDA d20# - 75, 0.5
+  RDA d21# - 75, 0.5
+  RDA d22# - 75, -0.5
+  RDA d23# - 75, -0.5
+  MULX rt
+  WRA d32, 0.0
+
+  RDA d20# - 40, 0.5
+  RDA d21# - 40, -0.5
+  RDA d22# - 40, -0.5
+  RDA d23# - 40, 0.5
+  MULX rt
+  WRA d33, 0.0
+
+calc_lattice_dense_d3x:
+
+  RDA d30# - 132, 0.5
+  RDA d31# - 132, 0.5
+  RDA d32# - 132, 0.5
+  RDA d33# - 132, 0.5
+  WRAX out_d3x, 1.0
+  MULX rt
+  RDAX input, 1.0
+  WRA d00, 0.0
+
+  RDA d30# - 103, 0.5
+  RDA d31# - 103, -0.5
+  RDA d32# - 103, 0.5
+  RDA d33# - 103, -0.5
+  MULX rt
+  WRA d01, 0.0
+
+  RDA d30# - 145, 0.5
+  RDA d31# - 145, 0.5
+  RDA d32# - 145, -0.5
+  RDA d33# - 145, -0.5
+  MULX rt
+  RDFX lpf_d3x, k_8kHz
+  WRAX lpf_d3x, 1.0
+  WRA d02, 0.0
+
+  RDA d30# - 120, 0.5
+  RDA d31# - 120, -0.5
+  RDA d32# - 120, -0.5
+  RDA d33# - 120, 0.5
+  MULX rt
+  WRA d03, 0.0
+
+
+dense_output:
+
+  RDAX out_d0x, 1.0
+  RDAX out_d1x, 1.0
+  RDAX out_d2x, 1.0
+  RDAX out_d3x, 1.0
+  SOF -1.5, 0.0
+  SOF -1.5, 0.0
+  WRAX out, 1.0
+
+
+output_shaper:
+
+  WRAX lim, -0.33333
+  MULX lim
+  MULX lim
+  RDAX lim, 1.0
+  RDAX out, 1.0
+
+  WRAX dacl, 1.0
+  WRAX dacr, 0.0   ; Remove for production
